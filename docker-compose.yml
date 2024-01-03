@@ -1,0 +1,16 @@
+version: '3.7'
+
+services:
+  redis:
+    image: redis:6.2.6
+    container_name: send-service_redis
+    ports:
+      - 6379:6379
+  mongo:
+    image: mongo:4.4.17
+    container_name: send-service_mongo
+    ports:
+      - 27017:27017
+    environment:
+      - PUID=1000
+      - PGID=1000
