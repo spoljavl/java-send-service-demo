@@ -45,6 +45,14 @@
       <scope>provided</scope>
     </dependency>
 
+    <!-- DNS Resolution Problem at start on Apple M1 -->
+    <dependency>
+      <groupId>io.netty</groupId>
+      <artifactId>netty-resolver-dns-native-macos</artifactId>
+      <version>4.1.104.Final</version>
+      <classifier>osx-aarch_64</classifier>
+    </dependency>
+
   </dependencies>
 
   <dependencyManagement>
