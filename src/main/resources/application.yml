@@ -1,0 +1,12 @@
+server:
+  port: 8080
+spring:
+  application:
+    name: java-send-service-demo
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017
+      database: dead-queue
+    redis:
+      database: 1
+      host: redis://localhost:6379
