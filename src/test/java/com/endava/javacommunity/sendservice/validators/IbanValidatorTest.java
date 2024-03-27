@@ -9,7 +9,7 @@ public class IbanValidatorTest {
 
   @Test
   public void shouldValidateDEIban() {
-    final String iban = "HR1723600001101234565";
+    final String iban = "DE75512108001245126199";
 
     assertTrue(IbanValidator.isSupportedIban(iban));
   }
