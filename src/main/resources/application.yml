@@ -10,3 +10,5 @@ spring:
     redis:
       database: 1
       host: redis://localhost:6379
+client:
+  supportedCurrencies: "EUR, CHF, GBP, USD"
