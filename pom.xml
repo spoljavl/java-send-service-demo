@@ -57,6 +57,13 @@
       <scope>test</scope>
     </dependency>
 
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <version>5.11.0</version>
+      <scope>test</scope>
+    </dependency>
+
     <!-- DNS Resolution Problem at start on Apple M1 -->
     <dependency>
       <groupId>io.netty</groupId>
