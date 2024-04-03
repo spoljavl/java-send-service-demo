@@ -5,22 +5,33 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Builder;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter
-@Setter
+@Builder
+@Data
 public class Batch implements Serializable {
 
   private String id;
   private String currencySymbol;
   private long createdAt;
   private List<Send> sends;
+
+  public static Batch create(String currencySymbol) {
+    return Batch.builder()
+        .id(UUID.randomUUID().toString())
+        .currencySymbol(currencySymbol)
+        .createdAt(Instant.now().toEpochMilli())
+        .sends(new ArrayList<>())
+        .build();
+  }
 
   @JsonIgnore
   public boolean isElapsed(int batchSendCycle) {

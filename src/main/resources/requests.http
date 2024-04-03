@@ -1,0 +1,12 @@
+### Test POST /send/treansaction
+POST http://localhost:8080/send/transaction
+Content-Type: application/json
+
+{
+  "accountId": "123",
+  "transactionId": "123",
+  "iban": "DE75512108001245126199",
+  "amount": 2.20,
+  "currencySymbol": "EUR"
+}
+

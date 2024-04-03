@@ -8,7 +8,11 @@ spring:
       uri: mongodb://localhost:27017
       database: dead-queue
     redis:
-      database: 1
+      database: 8
       host: redis://localhost:6379
 client:
   supportedCurrencies: "EUR, CHF, GBP, USD"
+  send:
+    batch:
+      timeoutSeconds: 20
+      maxSize: 2
