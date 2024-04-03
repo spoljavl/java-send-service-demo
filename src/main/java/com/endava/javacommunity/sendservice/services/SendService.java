@@ -1,7 +1,7 @@
 package com.endava.javacommunity.sendservice.services;
 
 import com.endava.javacommunity.sendservice.data.request.SendRequestDto;
-import com.endava.javacommunity.sendservice.data.request.SendResponseDto;
+import com.endava.javacommunity.sendservice.data.response.SendResponseDto;
 import com.endava.javacommunity.sendservice.handlers.SendHandler;
 import com.endava.javacommunity.sendservice.validators.CurrencyValidator;
 import com.endava.javacommunity.sendservice.validators.IbanValidator;
