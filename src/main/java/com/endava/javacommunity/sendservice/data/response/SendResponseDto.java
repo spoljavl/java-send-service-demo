@@ -1,4 +1,4 @@
-package com.endava.javacommunity.sendservice.data.request;
+package com.endava.javacommunity.sendservice.data.response;
 
 import java.io.Serializable;
 import lombok.AllArgsConstructor;

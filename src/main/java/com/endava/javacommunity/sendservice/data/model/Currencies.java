@@ -1,5 +1,8 @@
 package com.endava.javacommunity.sendservice.data.model;
 
+import lombok.Getter;
+
+@Getter
 public enum Currencies {
 
   EUR("EUR", "euro", "978"),

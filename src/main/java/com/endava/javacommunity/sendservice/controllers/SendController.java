@@ -1,7 +1,7 @@
 package com.endava.javacommunity.sendservice.controllers;
 
 import com.endava.javacommunity.sendservice.data.request.SendRequestDto;
-import com.endava.javacommunity.sendservice.data.request.SendResponseDto;
+import com.endava.javacommunity.sendservice.data.response.SendResponseDto;
 import com.endava.javacommunity.sendservice.services.SendService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
