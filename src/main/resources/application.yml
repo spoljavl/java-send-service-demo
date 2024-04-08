@@ -6,7 +6,7 @@ spring:
   data:
     mongodb:
       uri: mongodb://localhost:27017
-      database: dead-queue
+      database: send-service
     redis:
       database: 8
       host: redis://localhost:6379

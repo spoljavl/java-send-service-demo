@@ -2,8 +2,10 @@ package com.endava.javacommunity.sendservice.schedulers;
 
 import com.endava.javacommunity.sendservice.clients.SendConfirmationWebClient;
 import com.endava.javacommunity.sendservice.data.model.Currencies;
+import com.endava.javacommunity.sendservice.data.response.SendConfirmationResponseDto;
 import com.endava.javacommunity.sendservice.mappers.CustomMapper;
 import com.endava.javacommunity.sendservice.services.CacheService;
+import com.endava.javacommunity.sendservice.services.FailedBatchService;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -18,11 +20,14 @@ public class BatchSendScheduler {
   private final CacheService cacheService;
   private final CustomMapper customMapper;
   private final SendConfirmationWebClient sendConfirmationWebClient;
+  private final FailedBatchService failedBatchService;
 
-  public BatchSendScheduler(CacheService cacheService, CustomMapper customMapper, SendConfirmationWebClient sendConfirmationWebClient) {
+  public BatchSendScheduler(CacheService cacheService, CustomMapper customMapper, SendConfirmationWebClient sendConfirmationWebClient,
+      FailedBatchService failedBatchService) {
     this.cacheService = cacheService;
     this.customMapper = customMapper;
     this.sendConfirmationWebClient = sendConfirmationWebClient;
+    this.failedBatchService = failedBatchService;
   }
 
   @Scheduled(cron = "0/10 * * * * *")
@@ -43,11 +48,13 @@ public class BatchSendScheduler {
     return cacheService.removeFromSendQueue(currencies.getSymbol())
         .map(customMapper::deserializeBatch)
         .doOnNext(batch -> log.info("Preparing to send {} transactions for {} for batch {}", batch.size(), batch.getCurrencySymbol(), batch.getId()))
-        .flatMap(sendConfirmationWebClient::batchedSend)
-        .doOnError(throwable -> log.error("Error sending {} batch", currencies.getSymbol()))
-        //.onErrorResume() // TODO add to dead queue
-        .doOnNext(response -> log.info("Successfully sent {} batch; transactions: {}; fees: {}", currencies.getSymbol(),
-            response.getNumberOfConfirmedSends(), response.getFeesAmount()))
+        .flatMap(batch -> sendConfirmationWebClient.batchedSend(batch)
+            .doOnError(throwable -> log.error("Error sending {} transactions for {} for batch {}", batch.size(), batch.getCurrencySymbol(),
+                batch.getId()))
+            .onErrorResume(throwable -> failedBatchService.addBatchDeadQueue(batch)
+                .thenReturn(SendConfirmationResponseDto.builder().confirmed(false).build()))
+            .doOnNext(response -> log.info("Results for {} for batch {}: [confirmed: {}; numberOfConfirmedSends: {}; fees: {}]",
+                batch.getCurrencySymbol(), batch.getId(), response.isConfirmed(), response.getNumberOfConfirmedSends(), response.getFeesAmount())))
         .then();
   }
 }
