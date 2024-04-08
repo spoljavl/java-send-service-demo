@@ -2,49 +2,59 @@ package com.endava.javacommunity.sendservice.data.documents;
 
 import static com.endava.javacommunity.sendservice.data.documents.FailedBatch.COLLECTION_NAME;
 
-import java.io.Serializable;
+import com.endava.javacommunity.sendservice.data.model.Batch;
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.List;
-import lombok.AllArgsConstructor;
+import java.util.stream.Collectors;
 import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Value;
-import lombok.extern.jackson.Jacksonized;
-import org.bson.types.ObjectId;
-import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Value
-@Jacksonized
-@AllArgsConstructor
 @Builder
 @Document(COLLECTION_NAME)
 public class FailedBatch {
 
   public static final String COLLECTION_NAME = "failed-batches";
 
-  @Id
-  ObjectId id;
   @Indexed
   String batchId;
   @Indexed
   String currencySymbol;
-  String createdAt;
+  @Indexed
+  long createdAt;
   List<FailedSend> failedSends;
-  String timestamp;
+  @Indexed
+  long failedAt;
 
-  @NoArgsConstructor
-  @AllArgsConstructor
+  @Value
   @Builder
-  @Getter
-  public static class FailedSend implements Serializable {
-    private String accountId;
-    private String transactionId;
-    private String iban;
-    private BigDecimal amount;
-    private String currencySymbol;
+  public static class FailedSend {
+    String transactionId;
+    String senderIban;
+    String recipientIban;
+    BigDecimal amount;
+    String currencySymbol;
+  }
+
+  public static FailedBatch fromBatch(Batch batch) {
+    return FailedBatch.builder()
+        .batchId(batch.getId())
+        .currencySymbol(batch.getCurrencySymbol())
+        .createdAt(batch.getCreatedAt())
+        .failedSends(batch.getSends().stream()
+            .map(send -> FailedSend.builder()
+                .transactionId(send.getTransactionId())
+                .senderIban(send.getSenderIban())
+                .recipientIban(send.getRecipientIban())
+                .amount(send.getAmount())
+                .currencySymbol(send.getCurrencySymbol())
+                .build())
+            .collect(Collectors.toList()))
+        .failedAt(Instant.now().getEpochSecond())
+        .build();
   }
 
 }
