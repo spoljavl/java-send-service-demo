@@ -2,21 +2,19 @@ package com.endava.javacommunity.sendservice.data.model;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.Value;
+import lombok.extern.jackson.Jacksonized;
 
-@NoArgsConstructor
-@AllArgsConstructor
+@Value
 @Builder
-@Getter
+@Jacksonized
 public class Send implements Serializable {
 
-  private String accountId;
-  private String transactionId;
-  private String iban;
-  private BigDecimal amount;
-  private String currencySymbol;
+  String accountId;
+  String transactionId;
+  String iban;
+  BigDecimal amount;
+  String currencySymbol;
 
 }
