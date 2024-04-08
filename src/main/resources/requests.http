@@ -1,23 +1,22 @@
-### Test POST /send/transaction
+### Test1 POST /send/transaction
 POST http://localhost:8080/send/transaction
 Content-Type: application/json
 
 {
-  "accountId": "123",
-  "transactionId": "123",
-  "iban": "DE75512108001245126199",
+  "senderIban": "DE75512108001245126199",
+  "recipientIban": "GB29NWBK60161331926819",
   "amount": 2.20,
   "currencySymbol": "EUR"
 }
 
-### Test POST /send/transaction
+
+### Test2 POST /send/transaction
 POST http://localhost:8080/send/transaction
 Content-Type: application/json
 
 {
-  "accountId": "123",
-  "transactionId": "123",
-  "iban": "DE75512108001245126199",
+  "senderIban": "GB29NWBK60161331926819",
+  "recipientIban": "DE75512108001245126199",
   "amount": 8.88,
   "currencySymbol": "USD"
 }

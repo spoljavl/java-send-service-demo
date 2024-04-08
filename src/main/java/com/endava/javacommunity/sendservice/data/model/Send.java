@@ -11,9 +11,9 @@ import lombok.extern.jackson.Jacksonized;
 @Jacksonized
 public class Send implements Serializable {
 
-  String accountId;
   String transactionId;
-  String iban;
+  String senderIban;
+  String recipientIban;
   BigDecimal amount;
   String currencySymbol;
 

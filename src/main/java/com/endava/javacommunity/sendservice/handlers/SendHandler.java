@@ -23,14 +23,14 @@ public class SendHandler {
     this.maxBatchSize = maxBatchSize;
   }
 
-  public Mono<Void> addSend(String accountId, String transactionId, String iban, BigDecimal amount, String currencySymbol) {
+  public Mono<Void> addSend(String transactionId, String senderIban, String recipientIban, BigDecimal amount, String currencySymbol) {
     return Mono.fromRunnable(() -> log.info("Adding send transaction {} to batch", transactionId))
         .then(Mono.defer(() -> cacheService.getAndDeleteCurrentBatch(currencySymbol)))
         .map(customMapper::deserializeBatch)
         .doOnNext(currentBatch -> log.info("Current batch found with id {}", currentBatch.getId()))
         .switchIfEmpty(Mono.just(Batch.create(currencySymbol))
             .doOnNext(newCurrentBatch -> log.info("New batch created with id {}", newCurrentBatch.getId())))
-        .doOnNext(batch -> batch.addSend(accountId, transactionId, iban, amount, currencySymbol))
+        .doOnNext(batch -> batch.addSend(transactionId, senderIban, recipientIban, amount, currencySymbol))
         .doOnNext(batch -> log.info("Added new send transaction {} to batch {}", transactionId, batch.getId()))
         .flatMap(batch -> {
           if (batch.size() >= maxBatchSize) {

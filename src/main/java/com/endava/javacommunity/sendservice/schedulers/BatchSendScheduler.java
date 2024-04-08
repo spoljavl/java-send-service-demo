@@ -46,7 +46,8 @@ public class BatchSendScheduler {
         .flatMap(sendConfirmationWebClient::batchedSend)
         .doOnError(throwable -> log.error("Error sending {} batch", currencies.getSymbol()))
         //.onErrorResume() // TODO add to dead queue
-        .doOnNext(response -> log.info("Successfully sent {} transactions in {} batch", response.getNumberOfConfirmedSends(), currencies.getSymbol()))
+        .doOnNext(response -> log.info("Successfully sent {} batch; transactions: {}; fees: {}", currencies.getSymbol(),
+            response.getNumberOfConfirmedSends(), response.getFeesAmount()))
         .then();
   }
 }
