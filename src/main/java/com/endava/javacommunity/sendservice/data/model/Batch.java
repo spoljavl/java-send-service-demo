@@ -8,21 +8,20 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Value;
+import lombok.extern.jackson.Jacksonized;
 
-@NoArgsConstructor
-@AllArgsConstructor
+@Value
 @Builder
-@Data
+@Jacksonized
 public class Batch implements Serializable {
 
-  private String id;
-  private String currencySymbol;
-  private long createdAt;
-  private List<Send> sends;
+  String id;
+  String currencySymbol;
+  long createdAt;
+  List<Send> sends;
+  int resends;
 
   public static Batch create(String currencySymbol) {
     return Batch.builder()
@@ -30,6 +29,7 @@ public class Batch implements Serializable {
         .currencySymbol(currencySymbol)
         .createdAt(Instant.now().toEpochMilli())
         .sends(new ArrayList<>())
+        .resends(0)
         .build();
   }
 

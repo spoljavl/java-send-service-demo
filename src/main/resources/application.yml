@@ -11,8 +11,12 @@ spring:
       database: 8
       host: redis://localhost:6379
 client:
+  host: localhost
+  port: 8080
+  scheme: http
+  path: "/confirm/batch"
   supportedCurrencies: "EUR, CHF, GBP, USD"
   send:
     batch:
-      timeoutSeconds: 20
-      maxSize: 2
+      timeoutSeconds: 10
+      maxSize: 3

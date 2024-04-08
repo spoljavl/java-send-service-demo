@@ -18,7 +18,7 @@ Content-Type: application/json
   "accountId": "123",
   "transactionId": "123",
   "iban": "DE75512108001245126199",
-  "amount": 3.30,
+  "amount": 8.88,
   "currencySymbol": "USD"
 }
 

@@ -1,6 +1,7 @@
 package com.endava.javacommunity.sendservice.schedulers;
 
 import com.endava.javacommunity.sendservice.data.model.Currencies;
+import com.endava.javacommunity.sendservice.mappers.CustomMapper;
 import com.endava.javacommunity.sendservice.services.CacheService;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
@@ -15,10 +16,12 @@ import reactor.core.publisher.Mono;
 public class BatchTimeoutScheduler {
 
   private final CacheService cacheService;
+  private final CustomMapper customMapper;
   private final int timeoutSeconds;
 
-  public BatchTimeoutScheduler(CacheService cacheService, @Value("${client.send.batch.timeoutSeconds}") int timeoutSeconds) {
+  public BatchTimeoutScheduler(CacheService cacheService, CustomMapper customMapper, @Value("${client.send.batch.timeoutSeconds}") int timeoutSeconds) {
     this.cacheService = cacheService;
+    this.customMapper = customMapper;
     this.timeoutSeconds = timeoutSeconds;
   }
 
@@ -38,9 +41,10 @@ public class BatchTimeoutScheduler {
 
   private Mono<Void> checkCurrentBatchForTimeout(Currencies currencies) {
     return cacheService.getCurrentBatch(currencies.getSymbol())
+        .map(customMapper::deserializeBatch)
         .filter(batch -> batch.isElapsed(timeoutSeconds))
         .doOnNext(batch -> log.info("Batch cycle time {} elapsed. Adding current batch {} to the send queue.", timeoutSeconds, batch.getId()))
-        .flatMap(batch -> cacheService.addToSendQueue(batch)
+        .flatMap(batch -> cacheService.addToSendQueue(customMapper.serializeToJson(batch), batch.getCurrencySymbol())
             .then(cacheService.getAndDeleteCurrentBatch(batch.getCurrencySymbol())))
         .then();
   }

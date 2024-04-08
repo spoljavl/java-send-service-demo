@@ -1,6 +1,5 @@
 package com.endava.javacommunity.sendservice.services;
 
-import com.endava.javacommunity.sendservice.data.model.Batch;
 import org.redisson.api.RBucketReactive;
 import org.redisson.api.RQueueReactive;
 import org.redisson.api.RedissonReactiveClient;
@@ -19,30 +18,30 @@ public class CacheService {
     this.client = client;
   }
 
-  public Mono<Batch> getCurrentBatch(String currencySymbol) {
-    final RBucketReactive<Batch> currentBatch = client.getBucket(String.format(CURRENT_BATCH, currencySymbol));
+  public Mono<String> getCurrentBatch(String currencySymbol) {
+    final RBucketReactive<String> currentBatch = client.getBucket(String.format(CURRENT_BATCH, currencySymbol));
     return currentBatch.get();
   }
 
-  public Mono<Batch> getAndDeleteCurrentBatch(String currencySymbol) {
-    final RBucketReactive<Batch> currentBatch = client.getBucket(String.format(CURRENT_BATCH, currencySymbol));
+  public Mono<String> getAndDeleteCurrentBatch(String currencySymbol) {
+    final RBucketReactive<String> currentBatch = client.getBucket(String.format(CURRENT_BATCH, currencySymbol));
     return currentBatch.getAndDelete();
   }
 
-  public Mono<Void> addCurrentBatch(Batch batch) {
-    final RBucketReactive<Batch> currentBatch = client.getBucket(String.format(CURRENT_BATCH, batch.getCurrencySymbol()));
+  public Mono<Void> addCurrentBatch(String batch, String currencySymbol) {
+    final RBucketReactive<String> currentBatch = client.getBucket(String.format(CURRENT_BATCH, currencySymbol));
     return currentBatch.set(batch);
   }
 
-  public Mono<Void> addToSendQueue(Batch batch) {
-    final RQueueReactive<Batch> sendQueue = client.getQueue(String.format(BATCH_SEND_QUEUE, batch.getCurrencySymbol()));
+  public Mono<Void> addToSendQueue(String batch, String currencySymbol) {
+    final RQueueReactive<String> sendQueue = client.getQueue(String.format(BATCH_SEND_QUEUE, currencySymbol));
     return sendQueue.offer(batch)
         .switchIfEmpty(Mono.error(new RuntimeException("Cannot add batch to send queue")))
         .then();
   }
 
-  public Mono<Batch> removeFromSendQueue(String currencySymbol) {
-    final RQueueReactive<Batch> sendQueue = client.getQueue(String.format(BATCH_SEND_QUEUE, currencySymbol));
+  public Mono<String> removeFromSendQueue(String currencySymbol) {
+    final RQueueReactive<String> sendQueue = client.getQueue(String.format(BATCH_SEND_QUEUE, currencySymbol));
     return sendQueue.poll();
   }
 
