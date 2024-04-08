@@ -9,6 +9,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringJoiner;
+import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
@@ -29,7 +30,7 @@ public class SendService {
 
   public Mono<SendResponseDto> sendTransaction(SendRequestDto request) {
     return validateRequest(request)
-        .switchIfEmpty(sendHandler.addSend(request.getAccountId(), request.getTransactionId(), request.getIban(), request.getAmount(),
+        .switchIfEmpty(sendHandler.addSend(UUID.randomUUID().toString(), request.getSenderIban(), request.getRecipientIban(), request.getAmount(),
                 request.getCurrencySymbol())
             .thenReturn("send transaction submitted"))
         .map(message -> SendResponseDto.builder().message(message).build());
@@ -49,14 +50,18 @@ public class SendService {
   private List<String> getErrors(SendRequestDto request) {
     final List<String> errors = new ArrayList<>();
 
-    notBlank(request.getAccountId(), "accountId", errors);
-    notBlank(request.getTransactionId(), "transactionId", errors);
-    notBlank(request.getIban(), "iban", errors);
+    notBlank(request.getSenderIban(), "senderIban", errors);
+    notBlank(request.getRecipientIban(), "recipientIban", errors);
+    notEquals(request.getSenderIban(), request.getRecipientIban(), "senderIban", "recipientIban", errors);
     notZero(request.getAmount(), "amount", errors);
     notBlank(request.getCurrencySymbol(), "currencySymbol", errors);
 
-    if (request.getIban() != null && !request.getIban().isBlank() && !ibanValidator.isSupportedIban(request.getIban())) {
-      errors.add(String.format("Unsupported iban:  %s", request.getIban()));
+    if (request.getSenderIban() != null && !request.getSenderIban().isBlank() && !ibanValidator.isSupportedIban(request.getSenderIban())) {
+      errors.add(String.format("Unsupported iban:  %s", request.getSenderIban()));
+    }
+
+    if (request.getRecipientIban() != null && !request.getRecipientIban().isBlank() && !ibanValidator.isSupportedIban(request.getRecipientIban())) {
+      errors.add(String.format("Unsupported iban:  %s", request.getRecipientIban()));
     }
 
     if (request.getCurrencySymbol() != null && !request.getCurrencySymbol().isBlank() && !currencyValidator.isSupportedCurrency(
@@ -65,6 +70,13 @@ public class SendService {
     }
 
     return errors;
+  }
+
+  private static void notEquals(String value1, String value2, String fieldName1, String fieldName2, List<String> errors) {
+    final String message = "Field '%s' can't be the same as field '%s'";
+    if (value1 != null && value1.equalsIgnoreCase(value2)) {
+      errors.add(String.format(message, fieldName1, fieldName2));
+    }
   }
 
   private static void notBlank(String value, String fieldName, List<String> errors) {

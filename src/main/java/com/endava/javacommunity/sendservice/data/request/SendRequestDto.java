@@ -13,9 +13,8 @@ import lombok.NoArgsConstructor;
 @Data
 public class SendRequestDto implements Serializable {
 
-  private String accountId;
-  private String transactionId;
-  private String iban;
+  private String senderIban;
+  private String recipientIban;
   private BigDecimal amount;
   private String currencySymbol;
 

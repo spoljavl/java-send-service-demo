@@ -39,11 +39,11 @@ public class Batch implements Serializable {
   }
 
   @JsonIgnore
-  public void addSend(String accountId, String transactionId, String iban, BigDecimal amount, String currencySymbol) {
+  public void addSend(String transactionId, String senderIban, String recipientIban, BigDecimal amount, String currencySymbol) {
     this.sends.add(Send.builder()
-        .accountId(accountId)
         .transactionId(transactionId)
-        .iban(iban)
+        .senderIban(senderIban)
+        .recipientIban(recipientIban)
         .amount(amount)
         .currencySymbol(currencySymbol)
         .build());
