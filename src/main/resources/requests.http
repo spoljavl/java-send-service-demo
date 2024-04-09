@@ -5,7 +5,7 @@ Content-Type: application/json
 {
   "senderIban": "DE75512108001245126199",
   "recipientIban": "GB29NWBK60161331926819",
-  "amount": 2.20,
+  "amount": 2.88,
   "currencySymbol": "EUR"
 }
 
@@ -21,3 +21,10 @@ Content-Type: application/json
   "currencySymbol": "USD"
 }
 
+### Test3 GET /resend/failedBatches
+GET http://localhost:8080/resend/failedBatches?batchId=8e093990-3ba7-4eea-b3a1-b899b502444f
+Content-Type: application/json
+
+### Test4 POST /resend/batch/{batchId}
+POST http://localhost:8080/resend/batch/8e093990-3ba7-4eea-b3a1-b899b502444f
+Content-Type: application/json

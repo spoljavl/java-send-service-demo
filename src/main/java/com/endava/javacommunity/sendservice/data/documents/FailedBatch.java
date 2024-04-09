@@ -26,6 +26,7 @@ public class FailedBatch {
   @Indexed
   long createdAt;
   List<FailedSend> failedSends;
+  int resends;
   @Indexed
   long failedAt;
 
@@ -53,6 +54,7 @@ public class FailedBatch {
                 .currencySymbol(send.getCurrencySymbol())
                 .build())
             .collect(Collectors.toList()))
+        .resends(batch.getResends())
         .failedAt(Instant.now().getEpochSecond())
         .build();
   }

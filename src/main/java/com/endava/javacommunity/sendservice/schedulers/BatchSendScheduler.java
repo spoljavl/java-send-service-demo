@@ -3,6 +3,7 @@ package com.endava.javacommunity.sendservice.schedulers;
 import com.endava.javacommunity.sendservice.clients.SendConfirmationWebClient;
 import com.endava.javacommunity.sendservice.data.model.Currencies;
 import com.endava.javacommunity.sendservice.data.response.SendConfirmationResponseDto;
+import com.endava.javacommunity.sendservice.exceptions.ServiceUnavailableException;
 import com.endava.javacommunity.sendservice.mappers.CustomMapper;
 import com.endava.javacommunity.sendservice.services.CacheService;
 import com.endava.javacommunity.sendservice.services.FailedBatchService;
@@ -51,7 +52,7 @@ public class BatchSendScheduler {
         .flatMap(batch -> sendConfirmationWebClient.batchedSend(batch)
             .doOnError(throwable -> log.error("Error sending {} transactions for {} for batch {}", batch.size(), batch.getCurrencySymbol(),
                 batch.getId()))
-            .onErrorResume(throwable -> failedBatchService.addBatchDeadQueue(batch)
+            .onErrorResume(ServiceUnavailableException.class, throwable -> failedBatchService.addBatchDeadQueue(batch)
                 .thenReturn(SendConfirmationResponseDto.builder().confirmed(false).build()))
             .doOnNext(response -> log.info("Results for {} for batch {}: [confirmed: {}; numberOfConfirmedSends: {}; fees: {}]",
                 batch.getCurrencySymbol(), batch.getId(), response.isConfirmed(), response.getNumberOfConfirmedSends(), response.getFeesAmount())))
