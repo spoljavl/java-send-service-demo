@@ -3,6 +3,7 @@ package com.endava.javacommunity.sendservice.clients;
 import com.endava.javacommunity.sendservice.data.model.Batch;
 import com.endava.javacommunity.sendservice.data.request.SendConfirmationRequestDto;
 import com.endava.javacommunity.sendservice.data.response.SendConfirmationResponseDto;
+import com.endava.javacommunity.sendservice.exceptions.ServiceUnavailableException;
 import com.endava.javacommunity.sendservice.mappers.CustomMapper;
 import java.net.URI;
 import java.util.Optional;
@@ -60,7 +61,7 @@ public class SendConfirmationWebClient {
             .flatMap(cr -> cr.bodyToMono(String.class))
             .doOnNext(b -> log.error("Sending batch error body {}", b))
             .doOnError(e -> log.error("Sending batch error class: {} message: {}", e.getClass().getSimpleName(), e.getMessage()))
-            .thenReturn(new RuntimeException(clientResponse.statusCode().toString())))
+            .thenReturn(new ServiceUnavailableException("Service Unavailable - try again later")))
         .bodyToMono(SendConfirmationResponseDto.class));
   }
 
