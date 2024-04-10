@@ -1,4 +1,4 @@
-### Test1 POST /send/transaction
+### Test1 POST /send/transaction EUR - success
 POST http://localhost:8080/send/transaction
 Content-Type: application/json
 
@@ -10,21 +10,21 @@ Content-Type: application/json
 }
 
 
-### Test2 POST /send/transaction
+### Test2 POST /send/transaction USD - failed
 POST http://localhost:8080/send/transaction
 Content-Type: application/json
 
 {
   "senderIban": "GB29NWBK60161331926819",
   "recipientIban": "DE75512108001245126199",
-  "amount": 8.88,
+  "amount": 2.88,
   "currencySymbol": "USD"
 }
 
 ### Test3 GET /resend/failedBatches
-GET http://localhost:8080/resend/failedBatches?batchId=8e093990-3ba7-4eea-b3a1-b899b502444f
+GET http://localhost:8080/resend/failedBatches?currencySymbol=EUR
 Content-Type: application/json
 
 ### Test4 POST /resend/batch/{batchId}
-POST http://localhost:8080/resend/batch/8e093990-3ba7-4eea-b3a1-b899b502444f
+POST http://localhost:8080/resend/batch/0dc82f1c-3a96-43fc-8f36-48c63423d337
 Content-Type: application/json

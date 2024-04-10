@@ -31,7 +31,7 @@ public class BatchSendScheduler {
     this.failedBatchService = failedBatchService;
   }
 
-  @Scheduled(cron = "0/10 * * * * *")
+  @Scheduled(cron = "${client.send.batch.sendSchedulerCron}")
   public void execute() {
     log.debug("triggering periodic job for batch send...");
     sendAllBatchesFromSendQueue().block();
