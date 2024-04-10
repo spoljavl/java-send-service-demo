@@ -18,11 +18,15 @@ public class BatchTimeoutScheduler {
   private final CacheService cacheService;
   private final CustomMapper customMapper;
   private final int timeoutSeconds;
+  private final int minBatchSize;
 
-  public BatchTimeoutScheduler(CacheService cacheService, CustomMapper customMapper, @Value("${client.send.batch.timeoutSeconds}") int timeoutSeconds) {
+  public BatchTimeoutScheduler(CacheService cacheService, CustomMapper customMapper,
+      @Value("${client.send.batch.timeoutSeconds}") int timeoutSeconds,
+      @Value("${client.send.batch.minSize}") int minBatchSize) {
     this.cacheService = cacheService;
     this.customMapper = customMapper;
     this.timeoutSeconds = timeoutSeconds;
+    this.minBatchSize = minBatchSize;
   }
 
   @Scheduled(cron = "${client.send.batch.timeoutSchedulerCron}")
@@ -42,7 +46,7 @@ public class BatchTimeoutScheduler {
   private Mono<Void> checkCurrentBatchForTimeout(Currencies currencies) {
     return cacheService.getCurrentBatch(currencies.getSymbol())
         .map(customMapper::deserializeBatch)
-        .filter(batch -> batch.isElapsed(timeoutSeconds))
+        .filter(batch -> batch.isElapsed(timeoutSeconds) && batch.size() >= minBatchSize)
         .doOnNext(batch -> log.info("Batch cycle time {} elapsed. Adding current batch {} to the send queue.", timeoutSeconds, batch.getId()))
         .flatMap(batch -> cacheService.addToSendQueue(customMapper.serializeToJson(batch), batch.getCurrencySymbol())
             .then(cacheService.getAndDeleteCurrentBatch(batch.getCurrencySymbol())))
