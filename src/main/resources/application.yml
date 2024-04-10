@@ -20,3 +20,5 @@ client:
     batch:
       timeoutSeconds: 10
       maxSize: 3
+      sendSchedulerCron: "0/10 * * * * *"
+      timeoutSchedulerCron: "0/5 * * * * *"

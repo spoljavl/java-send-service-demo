@@ -25,7 +25,7 @@ public class BatchTimeoutScheduler {
     this.timeoutSeconds = timeoutSeconds;
   }
 
-  @Scheduled(cron = "0/5 * * * * *")
+  @Scheduled(cron = "${client.send.batch.timeoutSchedulerCron}")
   public void execute() {
     log.debug("triggering periodic job for current batch timeout check...");
     checkAllCurrentBatchesForTimeout().block();
